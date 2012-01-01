@@ -1,3 +1,6 @@
+// info_bar.js - thepaperlink-fx
+// author: Liang Cai, 2012
+
 var base_uri, apikey,
   pubmeder_ok, pubmeder_apikey, pubmeder_email,
   cloud_op, ezproxy_prefix,

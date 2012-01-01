@@ -1,3 +1,6 @@
+// find_id.js - thepaperlink-fx
+// author: Liang Cai, 2012
+
 function parse_id(a) { // pubmeder code
   var regpmid = /pmid\s*:?\s*(\d+)\s*/i, 
     regdoi = /doi\s*:?\s*/i,
