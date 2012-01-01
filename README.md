@@ -1,5 +1,5 @@
-This is the thepaperlink-fx add-on.  It contains:
+this is updated after my Chrome Extension
+https://chrome.google.com/webstore/detail/kgdcooicefdfjcplcnehfpbngjccncko
 
-* A program (lib/main.js).
-* A few tests.
-* Some meager documentation.
+whose source is
+https://github.com/coronin/thepaperlink-chrome
