@@ -1,0 +1,8 @@
+{
+  "name": "thepaperlink-fx",
+  "fullName": "the Paper Link for PubMed",
+  "description": "Add direct PDF link; display F1000 scores, Impact Factor, Peaks and much more... (by Liang Cai, for Mozilla Firefox)",
+  "author": "Liang Cai",
+  "license": "MPL 1.1/GPL 2.0/LGPL 2.1",
+  "version": "0.1"
+}
