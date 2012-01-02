@@ -220,7 +220,7 @@ self.on('message', function(msg) {
       if (pubmeder_ok || cloud_op) {
         div.innerHTML += '<span id="thepaperlink_save' + r.item[i].pmid +
           '" class="thepaperlink-home" onclick="saveIt(\'' + r.item[i].pmid +
-          '\',\'' + save_key + '\',\'' + save_email + '\',\'' +
+          '\',\'' + pubmeder_apikey + '\',\'' + pubmeder_email + '\',\'' +
           apikey + '\',\'' + cloud_op + '\')">save&nbsp;it</span>';
       }
       if (apikey) {
@@ -268,7 +268,7 @@ self.on('message', function(msg) {
         t('h2')[title_pos].innerHTML = old_title + bookmark_div + '&nbsp;&nbsp;<img src="' + loading_gif +
           '" width="16" height="11" alt="loading" />';
         onePage_calls += 1;
-        self.postMessage(['url', '/api?a=safari2&pmid=' + pmidArray.join(',') + '&apikey=']);
+        self.postMessage(['url', '/api?a=fx2&pmid=' + pmidArray.join(',') + '&apikey=']);
       }
     }
     console.log('onePage_calls: ' + onePage_calls);
