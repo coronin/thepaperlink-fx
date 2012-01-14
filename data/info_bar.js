@@ -1,40 +1,44 @@
 // info_bar.js - thepaperlink-fx
 // author: Liang Cai, 2012
 
-var base_uri, apikey,
-  pubmeder_ok, pubmeder_apikey, pubmeder_email,
-  cloud_op, ezproxy_prefix,
-  loading_gif;
-
-var pmids = '',
+var base_uri,
+  apikey,
+  pubmeder_ok,
+  pubmeder_apikey,
+  pubmeder_email,
+  cloud_op,
+  ezproxy_prefix,
+  loading_gif,
+  pmids = '',
   pmidArray = [],
   old_title = '',
   title_pos = 0,
   search_term = '',
-  onePage_calls = 0,
-  alert_js = 'function alert_dev(apikey) {' +
-'  if (apikey && apikey !== "G0oasfw0382Wd3oQ0l1LiWzE") {' +
-'   var oXHR = new XMLHttpRequest();' +
-'   oXHR.open("POST", "http://0.pl4.me/?action=alert_dev&pmid=1&apikey=" + apikey, true);' +
-'   oXHR.onreadystatechange = function (oEvent) {' +
-'     if (oXHR.readyState === 4) {' +
-'       if (oXHR.status === 200) {' +
-'         console.log(oXHR.responseText);' +
-'       } else {' +
-'         console.log("Error", oXHR.statusText);' +
-'     } }' +
-'   };' +
-'   oXHR.send(null);' +
-'  } else {' +
-'    alert("You have to be a registered user to be able to alert the developer.");' +
-'  }' +
-'}';
+  onePage_calls = 0;
 
 function t(n) { return document.getElementsByTagName(n); }
 
 function $(d) { return document.getElementById(d); }
 
 function trim(s) { return ( s || '' ).replace( /^\s+|\s+$/g, '' ); }
+
+function alert_dev() {
+  if (apikey) {
+   var oXHR = new XMLHttpRequest();
+   oXHR.open('POST', 'http://0.pl4.me/?action=alert_dev&pmid=1&apikey=' + apikey, true);
+   oXHR.onreadystatechange = function (oEvent) {
+     if (oXHR.readyState === 4) {
+       if (oXHR.status === 200) {
+         $('thepaperlink_alert').innerHTML('&lt;!&gt; Just sent the alert.');
+       } else {
+         console.log('Error', oXHR.statusText);
+     } }
+   };
+   oXHR.send(null);
+  } else {
+    alert('You have to be a registered user to be able to alert the developer.');
+  }
+}
 
 function getPmid(zone, num) {
   var a = t(zone)[num].textContent,
