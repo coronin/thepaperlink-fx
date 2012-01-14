@@ -20,8 +20,7 @@ self.on('message', function(msg) {
       '</a> and enjoy the convenience <a href="http://www.thepaperlink.com" target="_blank">the Paper Link</a> brought to you...</p><ul><li>';
 
   if (apikey) {
-    div_html += 'the Paper Link apikey : ' + apikey +
-      '<br />After search, you can click the icon "&hellip;" shown on the bar for extra function.' +
+    div_html += 'After search, you can click the icon "&hellip;" shown on the bar for extra function.' +
       'You can update your apikey at ';
   } else {
     div_html += '<i>Want to get more reliable response?</i><br />' +
@@ -66,10 +65,10 @@ self.on('message', function(msg) {
   }
 
   if (!tab_open_if_no_apikey) {
-    div_html += '<li>Pref: you will not know if your apikey is not correct, really?<br /><button id="check_api">change it</button></li>';
+    div_html += '<li>[Pref.] You will not know if your apikey is not correct, really?<br /><button id="check_api">change it</button></li>';
   }
   if (no_context_menu) {
-    div_html += '<li>Pref: you have disabled context menu, are you sure?<br /><button id="activate_context_menu">change it</button></li>';
+    div_html += '<li>[Pref.] You have disabled context menu, are you sure?<br /><button id="activate_context_menu">change it</button></li>';
   }
   if (rev_proxy) {
     div_html += '<li>you are using the slow server</li>';
