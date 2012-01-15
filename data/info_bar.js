@@ -152,7 +152,7 @@ self.on('message', function(msg) {
     run();
 
   } else if (msg[0] === 'tj') {
-    var div, i, j, k, S, styles, peaks,
+    var pmid, div, div_html, i, j, k, S, styles, peaks,
       r = msg[1],
       bookmark_div = '<div id="css_loaded" class="thepaperlink" style="margin-left:10px;font-size:80%;font-weight:normal;cursor:pointer"> ';
     if (r.error) {
@@ -209,48 +209,49 @@ self.on('message', function(msg) {
       pmid = uneval_trim( r.item[i].pmid );
       div = doc.createElement('div');
       div.className = 'thepaperlink';
-      div.innerHTML = '<a class="thepaperlink-home" href="' + base_uri +
+      div_html = '<a class="thepaperlink-home" href="' + base_uri +
         '/?q=pmid:' + pmid + '" target="_blank">the Paper Link</a>: ';
       if (r.item[i].slfo && r.item[i].slfo !== '~' && parseFloat(r.item[i].slfo) > 0) {
-        div.innerHTML += '<span>impact&nbsp;' + uneval_trim( r.item[i].slfo ) + '</span>';
+        div_html += '<span>impact&nbsp;' + uneval_trim( r.item[i].slfo ) + '</span>';
       }
       if (r.item[i].pdf) {
-        div.innerHTML += '<a id="thepaperlink_pdf' + pmid +
+        div_html += '<a id="thepaperlink_pdf' + pmid +
           '" class="thepaperlink-green" href="' + ezproxy_prefix + uneval_trim( r.item[i].pdf ) +
           '" target="_blank">direct&nbsp;pdf</a>';
       }
       if (r.item[i].pmcid) {
-        div.innerHTML += '<a id="thepaperlink_pmc' + pmid +
+        div_html += '<a id="thepaperlink_pmc' + pmid +
           '" href="https://www.ncbi.nlm.nih.gov/pmc/articles/' +
           uneval_trim( r.item[i].pmcid ) + '/?tool=thepaperlinkClient" target="_blank">open&nbsp;access</a>';
       }
       if (r.item[i].doi) {
-        div.innerHTML += '<a id="thepaperlink_doi' + pmid +
+        div_html += '<a id="thepaperlink_doi' + pmid +
           '" href="' + ezproxy_prefix + 'http://dx.doi.org/' + uneval_trim( r.item[i].doi ) + '" target="_blank">publisher</a>';
       } else if (r.item[i].pii) {
-        div.innerHTML += '<a id="thepaperlink_doi' + pmid +
+        div_html += '<a id="thepaperlink_doi' + pmid +
           '" href="' + ezproxy_prefix + 'http://linkinghub.elsevier.com/retrieve/pii/' + uneval_trim( r.item[i].pii ) + '" target="_blank">publisher</a>';
       }
       if (r.item[i].f_v && r.item[i].fid) {
-        div.innerHTML += '<a id="thepaperlink_f' + pmid +
+        div_html += '<a id="thepaperlink_f' + pmid +
           '" class="thepaperlink-red" href="' + ezproxy_prefix + 'http://f1000.com/' +
           uneval_trim( r.item[i].fid ) +
           '" target="_blank">f1000&nbsp;score&nbsp;' + uneval_trim( r.item[i].f_v ) + '</a>';
       }
       if (pubmeder_ok || cloud_op) {
-        div.innerHTML += '<span id="thepaperlink_save' + pmid +
+        div_html += '<span id="thepaperlink_save' + pmid +
           '" class="thepaperlink-home" onclick="saveIt(\'' + pmid +
           '\',\'' + pubmeder_apikey + '\',\'' + pubmeder_email + '\',\'' +
           apikey + '\',\'' + cloud_op + '\')">save&nbsp;it</span>';
       }
       if (apikey) {
-        div.innerHTML += '<span id="thepaperlink_rpt' + pmid +
+        div_html += '<span id="thepaperlink_rpt' + pmid +
           '" class="thepaperlink-home" onclick="show_me_the_money(\'' +
           pmid + '\',\'' + apikey + '\')">&hellip;</span>';
       }
       if (apikey && r.item[i].pdf) {
-        div.innerHTML += '<span style="display:none !important;" id="thepaperlink_hidden' + pmid + '"></span>';
+        div_html += '<span style="display:none !important;" id="thepaperlink_hidden' + pmid + '"></span>';
       }
+      div.innerHTML = div_html;
       $(pmid).appendChild(div);
 
 
