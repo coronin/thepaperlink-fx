@@ -122,17 +122,17 @@ function run() {
 
 function alert_dev() {
   if (apikey) {
-   var oXHR = new XMLHttpRequest();
-   oXHR.open('POST', 'http://0.pl4.me/?action=alert_dev&pmid=1&apikey=' + apikey, true);
-   oXHR.onreadystatechange = function (oEvent) {
-     if (oXHR.readyState === 4) {
-       if (oXHR.status === 200) {
-         $('thepaperlink_alert').innerHTML('&lt;!&gt; Just sent the alert.');
-       } else {
-         console.log('Error', oXHR.statusText);
-     } }
-   };
-   oXHR.send(null);
+    var oXHR = new XMLHttpRequest();
+    oXHR.open('POST', base_uri + '/?action=alert_dev&pmid=1&apikey=' + apikey, true);
+    oXHR.onreadystatechange = function (oEvent) {
+      if (oXHR.readyState === 4) {
+        if (oXHR.status === 200) {
+          $('thepaperlink_alert').innerHTML = '&lt;just sent the alert&gt;';
+        } else {
+          console.log('Error - alert_dev', oXHR.statusText);
+      } }
+    };
+    oXHR.send(null);
   } else {
     alert('You have to be a registered user to be able to alert the developer.');
   }
@@ -159,12 +159,12 @@ self.on('message', function(msg) {
       t('h2')[title_pos].innerHTML = old_title + ' <span style="font-size:14px;font-weight:normal;color:red">"the Paper Link" error : ' + r.error + '</span>';
       return;
     }
-    if (!$('paperlink2_display')) {
-      peaks = doc.createElement('script');
-      peaks.setAttribute('type', 'text/javascript');
-      peaks.setAttribute('src', base_uri + '/jss?y=' + (Math.random()));
-      doc.body.appendChild(peaks);
-    }
+    //if (!$('paperlink2_display')) {
+    //  peaks = doc.createElement('script');
+    //  peaks.setAttribute('type', 'text/javascript');
+    //  peaks.setAttribute('src', base_uri + '/jss?y=' + (Math.random()));
+    //  doc.body.appendChild(peaks);
+    //}
     styles = '.thepaperlink {'
       + '  background: #e0ecf1;'
       + '  border:2px solid #dedede; border-top:2px solid #eee; border-left:2px solid #eee;'
@@ -203,7 +203,7 @@ self.on('message', function(msg) {
     if (old_title) {
       t('h2')[title_pos].innerHTML = old_title + bookmark_div;
     } else {
-      t('h2')[title_pos].innerHTML = bookmark_div;
+      t('h2')[title_pos].innerHTML = '';
     }
     for (i = 0; i < r.count; i += 1) {
       pmid = uneval_trim( r.item[i].pmid );
