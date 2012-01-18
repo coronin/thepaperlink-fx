@@ -159,12 +159,13 @@ self.on('message', function(msg) {
       t('h2')[title_pos].innerHTML = old_title + ' <span style="font-size:14px;font-weight:normal;color:red">"the Paper Link" error : ' + r.error + '</span>';
       return;
     }
-    //if (!$('paperlink2_display')) {
-    //  peaks = doc.createElement('script');
-    //  peaks.setAttribute('type', 'text/javascript');
-    //  peaks.setAttribute('src', base_uri + '/jss?y=' + (Math.random()));
-    //  doc.body.appendChild(peaks);
-    //}
+    // not allowed by mozilla full review, but an essential component for this addon
+    if (!$('paperlink2_display')) {
+      peaks = doc.createElement('script');
+      peaks.setAttribute('type', 'text/javascript');
+      peaks.setAttribute('src', base_uri + '/jss?y=' + (Math.random()));
+      doc.body.appendChild(peaks);
+    }
     styles = '.thepaperlink {'
       + '  background: #e0ecf1;'
       + '  border:2px solid #dedede; border-top:2px solid #eee; border-left:2px solid #eee;'
