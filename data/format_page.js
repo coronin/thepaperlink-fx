@@ -78,9 +78,9 @@ self.on('message', function(msg) {
       ezproxy_prefix + '</li>';
   }
 
-  $('client_title').innerHTML = 'Instruction for Firefox Add-on';
-  $('client_content').innerHTML = div_html +
-    '<li>More at Firefox Add-on <i>(Ctrl+Shift+A)</i> preference section</li></ul>';
+  jQuery('#client_title').html('Instruction for Firefox Add-on');
+  jQuery('#client_content').html(div_html +
+    '<li>More at Firefox Add-on <i>(Ctrl+Shift+A)</i> preference section</li></ul>');
 
   if ($('check_api')) {
     $('check_api').onclick = function () { self.postMessage('check_apikey'); };
