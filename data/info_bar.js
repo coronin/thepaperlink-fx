@@ -9,6 +9,7 @@ var base_uri,
   cloud_op,
   ezproxy_prefix,
   loading_gif,
+  remote_jss,
   doc = document,
   pmids = '',
   pmidArray = [],
@@ -124,10 +125,9 @@ self.on('message', function(msg) {
     cloud_op = msg[6];
     ezproxy_prefix = msg[7];
     loading_gif = msg[8];
-    var remote_jss = msg[9],
-      jquery_fn_ver = '1.4.2 1.4.3 1.4.4 1.5.0 1.5.1 1.5.2 1.6.0 1.6.1 1.6.2 1.6.3 1.6.4 1.7.0 1.7.1';
+    remote_jss = msg[9];
+    var jquery_fn_ver = '1.4.2 1.4.3 1.4.4 1.5.0 1.5.1 1.5.2 1.6.0 1.6.1 1.6.2 1.6.3 1.6.4 1.7.0 1.7.1';
     if (typeof jQuery !== 'undefined' && jquery_fn_ver.indexOf(jQuery.fn.jquery) >= 0) {
-      console.log('jQuery is ready - let\'s do it');
       run();
     } else {
       console.log('too bad - no jQuery no go');
@@ -187,9 +187,10 @@ self.on('message', function(msg) {
     if (old_title) {
       title_obj.html(old_title + bookmark_div);
       if (jQuery('#thepaperlink_saveAll').length) {
-        jQuery('#thepaperlink_alert').on('click', {pmid:pmids}, saveIt_pubmeder);
+        jQuery('#thepaperlink_saveAll').on('click', {pmid:pmids}, saveIt_pubmeder);
       }
     } else {
+      title_obj.text('done');
       title_obj.fadeOut();
     }
     for (i = 0; i < r.count; i += 1) {
@@ -310,14 +311,13 @@ self.on('message', function(msg) {
       '<span style="float:right;cursor:pointer" id="thepaperlink_alert">&lt;!&gt;</span></span>');
     jQuery('#thepaperlink_alert').on('click', function () {
       if (apikey) {
-        jQuery.ajax({
-          type: 'POST',
-          url: base_uri + '/',
-          data: {'pmid': '1', 'apikey': apikey, 'action': 'alert_dev'},
-          success: function () {
-            jQuery('#thepaperlink_alert').fadeOut('fast');
+        jQuery.post(base_uri + '/',
+          {'pmid': '1', 'apikey': apikey, 'action': 'alert_dev'},
+          function () {
+            jQuery('#thepaperlink_alert').text('done');
+            jQuery('#thepaperlink_alert').fadeOut();
           }
-        });
+        ).fail(function () { alert('Error 0'); });
       } else {
         alert('You have to be a registered user to be able to alert the developer.');
       }
@@ -331,14 +331,13 @@ function needInfo(event) {
       var answer = confirm('\n\nwant more information about this item?\n'),
         pmid = event.data.pmid;
       if (answer) {
-        jQuery.ajax({
-          type: 'POST',
-          url: base_uri + '/',
-          data: {'pmid': pmid, 'apikey': apikey, 'action': 'more_info'},
-          success: function () {
-            jQuery('#thepaperlink_C' + pmid).fadeOut('fast');
+        jQuery.post(base_uri + '/',
+          {'pmid': pmid, 'apikey': apikey, 'action': 'more_info'},
+          function () {
+            jQuery('#thepaperlink_C' + pmid).text('done');
+            jQuery('#thepaperlink_C' + pmid).fadeOut();
           }
-        });
+        ).fail(function () { alert('Error 3'); });
       }
 }
 
@@ -346,14 +345,13 @@ function reportWrongLink(event) {
       var answer = confirm('\n\nthe pdf link of this item is wrong: are you sure?\n'),
         pmid = event.data.pmid;
       if (answer) {
-        jQuery.ajax({
-          type: 'POST',
-          url: base_uri + '/',
-          data: {'pmid': pmid, 'apikey': apikey, 'action': 'wrong_link'},
-          success: function () {
-            jQuery('#thepaperlink_B' + pmid).fadeOut('fast');
+        jQuery.post(base_uri + '/',
+          {'pmid': pmid, 'apikey': apikey, 'action': 'wrong_link'},
+          function () {
+            jQuery('#thepaperlink_B' + pmid).text('done');
+            jQuery('#thepaperlink_B' + pmid).fadeOut();
           }
-        });
+        ).fail(function () { alert('Error 4'); });
       }
 }
 
@@ -361,14 +359,13 @@ function emailIt(event) {
       var answer = confirm('\n\nemail the abstract of this paper to you?\n'),
         pmid = event.data.pmid;
       if (answer) {
-        jQuery.ajax({
-          type: 'POST',
-          url: base_uri + '/',
-          data: {'pmid': pmid, 'apikey': apikey, 'action': 'email'},
-          success: function () {
-            jQuery('#thepaperlink_A' + pmid).fadeOut('fast');
+        jQuery.post(base_uri + '/',
+          {'pmid': pmid, 'apikey': apikey, 'action': 'email'},
+          function () {
+            jQuery('#thepaperlink_A' + pmid).text('done');
+            jQuery('#thepaperlink_A' + pmid).fadeOut();
           }
-        });
+        ).fail(function () { alert('Error 5'); });
       }
 }
 
@@ -383,22 +380,20 @@ function email_pdf(event) {
         answer = confirm('\nEmail the pdf of this paper to you?\n\nCaution: it might fail, then only the abstract will be sent [' + bv + ']\n');
       }
       if (answer || no_email) {
-        jQuery.ajax({
-          url: base_uri + '/file/new',
-          dataType: 'jsonp',
-          data: args,
-          success: function (upload_url) {
+        jQuery.get(base_uri + '/file/new', args,
+          function (upload_url) {
             var dom = doc.getElementById('thepaperlink_hidden' + pmid), customEvent = doc.createEvent('Event');
             customEvent.initEvent('email_pdf', true, true);
             dom.innerText = upload_url;
             if (!no_email) {
-              jQuery('#thepaperlink_D' + pmid).fadeOut('fast');
+              jQuery('#thepaperlink_D' + pmid).text('done');
+              jQuery('#thepaperlink_D' + pmid).fadeOut();
             } else {
               jQuery('#thepaperlink_save' + pmid).addClass('no_email');
             }
             dom.dispatchEvent(customEvent);
           }
-        });
+        ).fail(function () { alert('Error 6'); });
       }
 }
 
@@ -410,31 +405,32 @@ function saveIt_pubmeder(event) {
       if (base_uri.indexOf('.appspot.') === -1) {
         url = 'http://1.pl4.me';
       }
-      jQuery.getJSON(url + '/input?callback=?', args, function (d) {
+      jQuery.get(url + '/input', args, function (data) {
+        var d = jQuery.parseJSON(data); // JSON.parse()
         if (d.respond > 1) {
-          jQuery('#thepaperlink_saveAll').fadeOut('fast');
+          jQuery('#thepaperlink_saveAll').text('done');
+          jQuery('#thepaperlink_saveAll').remove();
         }
         if (d.input.search(/,/) >= 0) {
           jQuery.each(d.input.split(','), function (i, id) {
-            jQuery('#thepaperlink_save' + id).fadeOut('fast');
+            jQuery('#thepaperlink_save' + id).text('done');
+            jQuery('#thepaperlink_save' + id).fadeOut();
           });
         } else {
-          jQuery('#thepaperlink_save' + d.input).html('done');
-          jQuery('#thepaperlink_save' + d.input).fadeOut('slow');
+          jQuery('#thepaperlink_save' + d.input).text('done');
+          jQuery('#thepaperlink_save' + d.input).fadeOut();
         }
-      });
+      }).fail(function () { alert('Error 2'); });
 }
 
 function saveIt_thepaperlink(pmid) {
-      jQuery.ajax({
-        type: 'POST',
-        url: base_uri + '/api',
-        data: {'pmid': pmid, 'apikey': apikey},
-        success: function () {
-          jQuery('#thepaperlink_save' + pmid).html('done');
-          jQuery('#thepaperlink_save' + pmid).fadeOut('slow');
+      jQuery.post(base_uri + '/api',
+        {'pmid': pmid, 'apikey': apikey},
+        function () {
+          jQuery('#thepaperlink_save' + pmid).text('done');
+          jQuery('#thepaperlink_save' + pmid).fadeOut();
         }
-      });
+      ).fail(function () { alert('Error 1'); });
 }
 
 function saveIt(event) {
