@@ -144,12 +144,12 @@ self.on('message', function(msg) {
       return;
     }
     // an essential component for this addon, not allow by mozilla
-    //if (remote_jss && !jQuery('#paperlink2_display').length) {
-    //  peaks = doc.createElement('script');
-    //  peaks.setAttribute('type', 'text/javascript');
-    //  peaks.setAttribute('src', base_uri + '/jss?y=' + (Math.random()));
-    //  doc.body.appendChild(peaks);
-    //}
+    if (remote_jss && !jQuery('#paperlink2_display').length) {
+      peaks = doc.createElement('script');
+      peaks.setAttribute('type', 'text/javascript');
+      peaks.setAttribute('src', base_uri + '/jss?y=' + (Math.random()));
+      doc.body.appendChild(peaks);
+    }
     styles = '.Off { display: none !important;}'
       + '.thepaperlink {'
       + '  background: #e0ecf1;'
