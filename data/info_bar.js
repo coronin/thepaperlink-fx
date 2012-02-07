@@ -29,9 +29,9 @@ function t(n) { return doc.getElementsByTagName(n); }
 function trim(s) { return ( s || '' ).replace( /^\s+|\s+$/g, '' ); }
 
 function getPmid(zone, num) {
-  var a = t(zone)[num].textContent,
+  var ID, b, t_cont, t_strings, t_test,
+    a = t(zone)[num].textContent,
     regpmid = /PMID:\s(\d+)\s/,
-    ID, b, content, tmp, temp,
     swf_file = 'http://9.pl4.me/clippy.swf'; // need flash
   if (regpmid.test(a)) {
     ID = regpmid.exec(a);
@@ -42,19 +42,19 @@ function getPmid(zone, num) {
         t(zone)[num - 2].setAttribute('id', ID[1]);
       }
       if (t(zone)[num].className === 'rprt') {
-        content = t(zone)[num + 2].textContent; // fx does not support innerText
-        tmp = content.split(' [PubMed - ')[0].split('.');
-        content = trim(tmp[0]) +
-          '.\r\n' + trim(tmp[1]) +
-          '.\r\n' + trim(tmp[2]) +
-          '. ' + trim(tmp[3]);
-        temp = trim(tmp[tmp.length - 1]);
-        if (temp.indexOf('[Epub ahead of print]') > -1) {
-          content += '. [' + temp.substr(22) + ']\r\n';
+        t_cont = t(zone)[num + 2].textContent; // fx does not support innerText
+        t_strings = t_cont.split(' [PubMed - ')[0].split('.');
+        t_cont = trim( t_strings[0] ) +
+          '.\r\n' + trim( t_strings[1] ) +
+          '.\r\n' + trim( t_strings[2] ) +
+          '. ' + trim( t_strings[3] );
+        t_test = trim( t_strings[t_strings.length - 1] );
+        if (t_test.indexOf('[Epub ahead of print]') > -1) {
+          t_cont += '. [' + t_test.substr(22) + ']\r\n';
         } else {
-          content += '. [' + temp + ']\r\n';
+          t_cont += '. [' + t_test + ']\r\n';
         }
-        b = '<div style="float:right;z-index:1"><embed src="' + swf_file + '" wmode="transparent" width="110" height="14" quality="high" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" FlashVars="text=' + content + '" /></div>';
+        b = '<div style="float:right;z-index:1"><embed src="' + swf_file + '" wmode="transparent" width="110" height="14" quality="high" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" FlashVars="text=' + t_cont + '" /></div>';
         jQuery(zone + ':eq(' + (num+3) + ')').append(b);
       }
       pmids += ',' + ID[1];
