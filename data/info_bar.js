@@ -31,8 +31,8 @@ function trim(s) { return ( s || '' ).replace( /^\s+|\s+$/g, '' ); }
 function getPmid(zone, num) {
   var ID, b, t_cont, t_strings, t_test,
     a = t(zone)[num].textContent,
-    regpmid = /PMID:\s(\d+)\s/,
-    swf_file = 'http://9.pl4.me/clippy.swf'; // need flash
+    regpmid = /PMID:\s(\d+)\s/;
+    // swf_file = 'http://9.pl4.me/clippy.swf'; // need remote flash
   if (regpmid.test(a)) {
     ID = regpmid.exec(a);
     if (ID[1]) {
@@ -45,17 +45,27 @@ function getPmid(zone, num) {
         t_cont = t(zone)[num + 2].textContent; // fx does not support innerText
         t_strings = t_cont.split(' [PubMed - ')[0].split('.');
         t_cont = trim( t_strings[0] ) +
-          '.\r\n' + trim( t_strings[1] ) +
-          '.\r\n' + trim( t_strings[2] ) +
+          '.##' + trim( t_strings[1] ) +
+          '.##' + trim( t_strings[2] ) +
           '. ' + trim( t_strings[3] );
         t_test = trim( t_strings[t_strings.length - 1] );
         if (t_test.indexOf('[Epub ahead of print]') > -1) {
-          t_cont += '. [' + t_test.substr(22) + ']\r\n';
+          t_cont += '. [' + t_test.substr(21) + ']##';
         } else {
-          t_cont += '. [' + t_test + ']\r\n';
+          t_cont += '. [' + t_test + ']##';
         }
-        b = '<div style="float:right;z-index:1"><embed src="' + swf_file + '" wmode="transparent" width="110" height="14" quality="high" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" FlashVars="text=' + t_cont + '" /></div>';
-        jQuery(zone + ':eq(' + (num+3) + ')').append(b);
+        //b = '<div style="float:right;z-index:1"><embed src="' + swf_file + '" wmode="transparent" width="110" height="14" quality="high" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" FlashVars="text=' + t_cont + '" /></div>';
+        //jQuery(zone + ':eq(' + (num+3) + ')').append(b);
+        jQuery( jQuery('<div>',
+          {text: 'copy', style: 'float:right;z-index:1;cursor:pointer;color:grey;text-decoration:underline'})
+        ).appendTo( zone + ':eq(' + (num+3) + ')'
+          ).on('mouseover', function (event) {
+            jQuery(this).text('copy to clipboard');
+          }).on('click', {t_cont:t_cont}, function (event) {
+            var t_cont = event.data.t_cont;
+            self.postMessage(['t_cont', t_cont]);
+            jQuery(this).text('done');
+          });
       }
       pmids += ',' + ID[1];
     }
