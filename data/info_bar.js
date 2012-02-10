@@ -50,7 +50,7 @@ function getPmid(zone, num) {
           '. ' + trim( t_strings[3] );
         t_test = trim( t_strings[t_strings.length - 1] );
         if (t_test.indexOf('[Epub ahead of print]') > -1) {
-          t_cont += '. [' + t_test.substr(21) + ']##';
+          t_cont += '. [' + trim( t_test.substr(21) ) + ']##';
         } else {
           t_cont += '. [' + t_test + ']##';
         }
