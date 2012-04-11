@@ -12,3 +12,4 @@ Detailed enhancement includes:
  * Extract PMID on any webpage
 
 This extension is built using API from http://www.pubmeder.com, http://www.thepaperlink.com and PubMed eUtils.
+Source of this extension is at https://github.com/coronin/thepaperlink-fx

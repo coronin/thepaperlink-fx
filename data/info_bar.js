@@ -1,7 +1,8 @@
 // info_bar.js - thepaperlink-fx
 // author: Liang Cai, 2012
 
-var base_uri,
+var DEBUG = false,
+  base_uri,
   apikey,
   pubmeder_ok,
   pubmeder_apikey,
@@ -9,6 +10,7 @@ var base_uri,
   cloud_op,
   ezproxy_prefix,
   loading_gif,
+  clippy_file,
   remote_jss,
   doc = document,
   pmids = '',
@@ -29,14 +31,15 @@ function t(n) { return doc.getElementsByTagName(n); }
 function trim(s) { return ( s || '' ).replace( /^\s+|\s+$/g, '' ); }
 
 function getPmid(zone, num) {
-  var ID, b, t_cont, t_strings, t_test,
-    a = t(zone)[num].textContent,
-    regpmid = /PMID:\s(\d+)\s/;
+  var a = t(zone)[num].textContent,
+    regpmid = /PMID:\s(\d+)\s/,
+    ID, b, c, t_cont, t_strings, t_test, t_title;
+  DEBUG && console.log(a);
     // swf_file = 'http://9.pl4.me/clippy.swf'; // need remote flash
   if (regpmid.test(a)) {
     ID = regpmid.exec(a);
     if (ID[1]) {
-      if (t(zone)[num + 1].className === 'rprtnum') {
+      if (t(zone)[num + 1].className.indexOf('rprtnum') > -1) {
         t(zone)[num + 2].setAttribute('id', ID[1]);
       } else {
         t(zone)[num - 2].setAttribute('id', ID[1]);
@@ -44,30 +47,50 @@ function getPmid(zone, num) {
       if (t(zone)[num].className === 'rprt') {
         t_cont = t(zone)[num + 2].textContent; // fx does not support innerText
         t_strings = t_cont.split(' [PubMed - ')[0].split('.');
-        t_cont = trim( t_strings[0] ) +
-          '.##' + trim( t_strings[1] ) +
-          '.##' + trim( t_strings[2] ) +
-          '. ' + trim( t_strings[3] );
-        t_test = trim( t_strings[t_strings.length - 1] );
-        if (t_test.indexOf('[Epub ahead of print]') > -1) {
-          t_cont += '. [' + trim( t_test.substr(21) ) + ']##';
-        } else {
-          t_cont += '. [' + t_test + ']##';
-        }
-        //b = '<div style="float:right;z-index:1"><embed src="' + swf_file + '" wmode="transparent" width="110" height="14" quality="high" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" FlashVars="text=' + t_cont + '" /></div>';
-        //jQuery(zone + ':eq(' + (num+3) + ')').append(b);
-        jQuery( jQuery('<div>',
-          {text: 'copy', style: 'float:right;z-index:1;cursor:pointer;color:grey;text-decoration:underline'})
-        ).appendTo( zone + ':eq(' + (num+3) + ')'
-          ).on('mouseover', function (event) {
-            jQuery(this).text('copy to clipboard');
-          }).on('click', {t_cont:t_cont}, function (event) {
-            var t_cont = event.data.t_cont;
-            self.postMessage(['t_cont', t_cont]);
-            jQuery(this).text('done');
-          });
+        t_title = trim( t_strings[0] );
+        t_cont = t_title +
+          '.\r\n' + trim( t_strings[1] ) +
+          '.\r\n' + trim( t_strings[2] ) +
+          '. ' + trim( t_strings[3] ) +
+          '. [' + ID[1] + ']\r\n';
+      } else{
+        t_strings = a.split('.');
+        t_title = trim( t_strings[2] );
+        t_cont = t_title +
+          '.\r\n' + trim( t_strings[3] ) +
+          '.\r\n' + trim( t_strings[0] ) +
+          '. ' + trim( t_strings[1] ) +
+          '. [' + ID[1] + ']\r\n';
       }
+      DEBUG && console.log(t_cont);
+      if (t(zone)[num].className === 'rprt') {
+        b = num + 3;
+        c = num + 3;  // 4
+      } else { // display with abstract
+        b = num + 1;
+        c = num + 4;  // 5
+      }
+      jQuery( jQuery('<div>', {text: ' ', style: 'float:right;z-index:1;cursor:pointer'})
+        .html('<img title="copy to clipboard" src="' + clippy_file + '" alt="copy" width="14" height="14" />')
+      ).appendTo( zone + ':eq(' + b + ')'
+      ).on('click', {t_cont:t_cont}, function (event) {
+        var t_cont = event.data.t_cont;
+        self.postMessage(['t_cont', t_cont]);
+        jQuery(this).text('copy');
+      });
+      jQuery( jQuery('<span>', {text: 'citation status', id: 'citedBy' + ID[1],
+        style: 'border-left:4px #fccccc solid;padding-left:4px;padding-right:4px;font-size:11px'})
+      ).appendTo( zone + ':eq(' + c + ')'
+      ).on('mouseover', function (event) {
+        jQuery(this).text('citation status is generated locally by fetching Google Scholar pages (Chrome only)');
+      })
+      .click(function () {
+        $(this).attr('target', '_blank');
+        window.open('https://chrome.google.com/webstore/detail/kgdcooicefdfjcplcnehfpbngjccncko');
+        return false;
+      });
       pmids += ',' + ID[1];
+      self.postMessage(['pmid_title', ID[1], t_title]);
     }
   }
 }
@@ -104,10 +127,11 @@ function run() {
   try {
     search_term = jQuery('#search_term').val();
   } catch (err) {
-    console.log(err);
+    DEBUG && console.log(err);
   }
+  self.postMessage(['reset_scholar_count']);
   for (i = 0; i < t('div').length; i += 1) {
-    if (t('div')[i].className === 'rprt' || t('div')[i].className === 'rprt abstract') { //  && t('div')[i].className !== 'abstract'
+    if (t('div')[i].className === 'rprt' || t('div')[i].className === 'rprt abstract') {
       getPmid('div', i);
     } else if (!search_term && t('div')[i].className === 'print_term') {
       z = t('div')[i].textContent;
@@ -126,6 +150,7 @@ function run() {
 
 
 self.on('message', function(msg) {
+  DEBUG && console.log(msg);
   if (msg[0] === 'init') {
     base_uri = msg[1];
     apikey = msg[2];
@@ -135,12 +160,13 @@ self.on('message', function(msg) {
     cloud_op = msg[6];
     ezproxy_prefix = msg[7];
     loading_gif = msg[8];
-    remote_jss = msg[9];
-    var jquery_fn_ver = '1.4.2 1.4.3 1.4.4 1.5.0 1.5.1 1.5.2 1.6.0 1.6.1 1.6.2 1.6.3 1.6.4 1.7.0 1.7.1';
+    clippy_file = msg[9];
+    remote_jss = msg[10];
+    var jquery_fn_ver = '1.4.2 1.4.3 1.4.4 1.5.0 1.5.1 1.5.2 1.6.0 1.6.1 1.6.2 1.6.3 1.6.4 1.7.0 1.7.1 1.7.2';
     if (typeof jQuery !== 'undefined' && jquery_fn_ver.indexOf(jQuery.fn.jquery) >= 0) {
       run();
     } else {
-      console.log('too bad - no jQuery no go');
+      DEBUG && console.log('too bad - no jQuery no go');
     }
 
   } else if (msg[0] === 'tj') {
@@ -153,7 +179,7 @@ self.on('message', function(msg) {
         uneval(r.error) + '</span>');
       return;
     }
-    // an essential component for this addon, not allow by mozilla
+    // @@@@ not allow by Mozilla
     if (remote_jss && !jQuery('#paperlink2_display').length) {
       peaks = doc.createElement('script');
       peaks.setAttribute('type', 'text/javascript');
@@ -216,6 +242,9 @@ self.on('message', function(msg) {
         div.append( jQuery('<a>', {href: ezproxy_prefix + r.item[i].pdf,
           text: 'direct pdf', class: 'thepaperlink-green', target: '_blank',
           id: 'thepaperlink_pdf' + pmid}) );
+      } else if (r.item[i].pii) {
+        self.postMessage(['pii_link', pmid, r.item[i].pii]);
+        div.append( jQuery('<span>', {text: '', id: 'thepaperlink_pdf' + pmid}) );
       }
       if (r.item[i].pmcid) {
         div.append( jQuery('<a>', {href: 'https://www.ncbi.nlm.nih.gov/pmc/articles/' + r.item[i].pmcid + '/?tool=thepaperlinkClient',
@@ -269,7 +298,7 @@ self.on('message', function(msg) {
       }
       if (jQuery('#thepaperlink_hidden' + pmid).length) {
         doc.getElementById('thepaperlink_hidden' + pmid).addEventListener('email_pdf', function () {
-          var eventData = this.innerText,
+          var eventData = this.textContent,
             pmid = this.id.substr(19),
             pdf = doc.getElementById('thepaperlink_pdf' + pmid).href,
             no_email_span = doc.getElementById('thepaperlink_save' + pmid).className;
@@ -280,7 +309,7 @@ self.on('message', function(msg) {
             try {
               doc.getElementById('thepaperlink_D' + pmid).setAttribute('style', 'display:none');
             } catch (err) {
-              console.log(err);
+              DEBUG && console.log(err);
             }
           }
         });
@@ -293,16 +322,16 @@ self.on('message', function(msg) {
     }
     if (pmidArray.length > 0) {
       if (pmidArray.length === k) {
-        console.log('getting nothing, failed on ' + k);
+        DEBUG && console.log('getting nothing, failed on ' + k);
       } else {
-        // console.log('call for ' + k + ', not get ' + pmidArray.length);
+        DEBUG && console.log('call for ' + k + ', not get ' + pmidArray.length);
         title_obj.html(old_title + bookmark_div + '&nbsp;&nbsp;<img src="' + loading_gif +
           '" width="16" height="11" alt="loading" />');
         onePage_calls += 1;
         self.postMessage(['url', '/api?a=fx2&pmid=' + pmidArray.join(',') + '&apikey=']);
       }
     }
-    // console.log('onePage_calls: ' + onePage_calls);
+    DEBUG && console.log('onePage_calls: ' + onePage_calls);
 
   } else if (msg[0] === 'wrong') {
     alert(msg[1]);
@@ -332,6 +361,50 @@ self.on('message', function(msg) {
         alert('You have to be a registered user to be able to alert the developer.');
       }
     });
+  } else if (msg[0] === 'g_scholar') {
+    try {
+      if (msg[2] === 1 && msg[3] === 1) {
+        jQuery('#citedBy' + msg[1]).text('trying');
+      } else if (msg[2] === 0 && msg[3] === 0) {
+        jQuery('#citedBy' + msg[1]).text('Really? No one cited it yet. Is it a very recent publication?');
+        if (doc.URL.indexOf('://www.ncbi.nlm.nih.gov/') > 0) {
+          jQuery('#citedBy' + msg[1]).fadeOut();
+        }
+      } else if (msg[2] && msg[3]) {
+        jQuery('#citedBy' + msg[1]).text('Cited by ' + msg[2] + ' times (in Google Scholar)');
+        jQuery('#citedBy' + msg[1]).click(function () {
+          $(this).attr('target', '_blank');
+          window.open('http://scholar.google.com' + msg[3]);
+          return false;
+        });
+      }
+    } catch (err) {
+      DEBUG && console.log(err);
+    }
+  } else if (msg[0] === 'el_link') {
+    try {
+      if (msg[2] === 1 && doc.URL.indexOf('://www.ncbi.nlm.nih.gov/') === -1) {
+        jQuery('#' + msg[1]).text('trying');
+      } else {
+        if (doc.URL.indexOf('://www.ncbi.nlm.nih.gov/') > 0) {
+          jQuery('#thepaperlink' + msg[1]).text('file link');
+          jQuery('#thepaperlink' + msg[1]).click(function () {
+            $(this).attr('target', '_blank');
+            window.open(msg[2]);
+            return false;
+          });
+        } else {
+          jQuery('#' + msg[1]).text('&raquo; the file link');
+          jQuery('#' + msg[1]).click(function () {
+            $(this).attr('target', '_blank');
+            window.open(msg[2]);
+            return false;
+          });
+        }
+      }
+    } catch (err) {
+      DEBUG && console.log(err);
+    }
   }
 });
 
@@ -394,7 +467,7 @@ function email_pdf(event) {
           function (upload_url) {
             var dom = doc.getElementById('thepaperlink_hidden' + pmid), customEvent = doc.createEvent('Event');
             customEvent.initEvent('email_pdf', true, true);
-            dom.innerText = upload_url;
+            dom.textContent = upload_url;
             if (!no_email) {
               jQuery('#thepaperlink_D' + pmid).text('done');
               jQuery('#thepaperlink_D' + pmid).fadeOut();
