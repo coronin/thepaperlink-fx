@@ -366,10 +366,7 @@ self.on('message', function(msg) {
       if (msg[2] === 1 && msg[3] === 1) {
         jQuery('#citedBy' + msg[1]).text('trying');
       } else if (msg[2] === 0 && msg[3] === 0) {
-        jQuery('#citedBy' + msg[1]).text('Really? No one cited it yet. Is it a very recent publication?');
-        if (doc.URL.indexOf('://www.ncbi.nlm.nih.gov/') > 0) {
-          jQuery('#citedBy' + msg[1]).fadeOut();
-        }
+        jQuery('#citedBy' + msg[1]).fadeOut();
       } else if (msg[2] && msg[3]) {
         jQuery('#citedBy' + msg[1]).text('Cited by ' + msg[2] + ' times (in Google Scholar)');
         jQuery('#citedBy' + msg[1]).click(function () {
@@ -383,25 +380,12 @@ self.on('message', function(msg) {
     }
   } else if (msg[0] === 'el_link') {
     try {
-      if (msg[2] === 1 && doc.URL.indexOf('://www.ncbi.nlm.nih.gov/') === -1) {
-        jQuery('#' + msg[1]).text('trying');
-      } else {
-        if (doc.URL.indexOf('://www.ncbi.nlm.nih.gov/') > 0) {
-          jQuery('#thepaperlink' + msg[1]).text('file link');
-          jQuery('#thepaperlink' + msg[1]).click(function () {
-            $(this).attr('target', '_blank');
-            window.open(msg[2]);
-            return false;
-          });
-        } else {
-          jQuery('#' + msg[1]).text('&raquo; the file link');
-          jQuery('#' + msg[1]).click(function () {
-            $(this).attr('target', '_blank');
-            window.open(msg[2]);
-            return false;
-          });
-        }
-      }
+      jQuery('#thepaperlink' + msg[1]).text('file link');
+      jQuery('#thepaperlink' + msg[1]).click(function () {
+        $(this).attr('target', '_blank');
+        window.open(msg[2]);
+        return false;
+      });
     } catch (err) {
       DEBUG && console.log(err);
     }
