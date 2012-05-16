@@ -4,22 +4,26 @@ var ws,
   DEBUG = true;
 
 self.port.on('req_key', function(m) {
-  req_key = m;
-  load_broadcast();
+  req_key = m[0];
+  broadcast_loaded = 0;
+  if (ws) {
+    ws.close();
+  }
+  load_broadcast(m[1]);
 });
 
 self.on('message', function(m) {
   ws.send(m);
 });
 
-function load_broadcast() {
+function load_broadcast(ws_addr) {
   var _self = this;
   this.start = function () {
     window.WebSocket = window.WebSocket || window.MozWebSocket;
     if (!window.WebSocket) {
       return;
     }
-    ws = new WebSocket('ws://husband.jit.su:80');
+    ws = new WebSocket('ws://' + ws_addr);
 
     ws.onopen = function () {
       DEBUG && console.log('>> ws is established');

@@ -52,7 +52,7 @@ function getPmid(zone, num) {
           '.\r\n' + trim( t_strings[1] ) +
           '.\r\n' + trim( t_strings[2] ) +
           '. ' + trim( t_strings[3] ) +
-          '. [' + ID[1] + ']\r\n';
+          '. [PMID:' + ID[1] + ']\r\n';
       } else{
         t_strings = a.split('.');
         t_title = trim( t_strings[2] );
@@ -60,7 +60,7 @@ function getPmid(zone, num) {
           '.\r\n' + trim( t_strings[3] ) +
           '.\r\n' + trim( t_strings[0] ) +
           '. ' + trim( t_strings[1] ) +
-          '. [' + ID[1] + ']\r\n';
+          '. [PMID:' + ID[1] + ']\r\n';
       }
       DEBUG && console.log(t_cont);
       if (t(zone)[num].className === 'rprt') {
@@ -71,24 +71,26 @@ function getPmid(zone, num) {
         c = num + 4;  // 5
       }
       jQuery( jQuery('<div>', {text: ' ', style: 'float:right;z-index:1;cursor:pointer'})
-        .html('<img title="copy to clipboard" src="' + clippy_file + '" alt="copy" width="14" height="14" />')
+        .html('<img class="pl4_clippy" title="copy to clipboard" src="' + clippy_file + '" alt="copy" width="14" height="14" />')
       ).appendTo( zone + ':eq(' + b + ')'
       ).on('click', {t_cont:t_cont}, function (event) {
         var t_cont = event.data.t_cont;
         self.postMessage(['t_cont', t_cont]);
         jQuery(this).text('copy');
       });
-      jQuery( jQuery('<span>', {text: 'citation status', id: 'citedBy' + ID[1],
-        style: 'border-left:4px #fccccc solid;padding-left:4px;padding-right:4px;font-size:11px'})
-      ).appendTo( zone + ':eq(' + c + ')'
-      ).on('mouseover', function (event) {
-        jQuery(this).text('citation status is generated locally by fetching Google Scholar pages (Chrome only)');
-      })
-      .click(function () {
-        $(this).attr('target', '_blank');
-        window.open('https://chrome.google.com/webstore/detail/kgdcooicefdfjcplcnehfpbngjccncko');
-        return false;
-      });
+      if (a.indexOf('- in process') < 0) {
+        jQuery( jQuery('<span>', {text: 'cited by: ', id: 'citedBy' + ID[1],
+          style: 'border-left:6px #fccccc solid;padding-left:6px;font-size:11px'})
+        ).appendTo( zone + ':eq(' + c + ')'
+        ).on('mouseover', function (event) {
+          jQuery(this).text('cited times is generated locally by fetching Google Scholar pages (Chrome only)');
+        })
+        .click(function () {
+          $(this).attr('target', '_blank');
+          window.open('https://chrome.google.com/webstore/detail/kgdcooicefdfjcplcnehfpbngjccncko');
+          return false;
+        });
+      }
       pmids += ',' + ID[1];
       self.postMessage(['pmid_title', ID[1], t_title]);
     }
@@ -96,7 +98,7 @@ function getPmid(zone, num) {
 }
 
 function get_Json(pmids) {
-  var i, div,
+  var i,
     need_insert = 1,
     url = '/api?flash=yes&a=fx1&pmid=' + pmids,
     loading_span = '<span style="font-weight:normal;font-style:italic"> fetching data from "the Paper Link"</span>&nbsp;&nbsp;<img src="' + loading_gif +
@@ -173,10 +175,14 @@ self.on('message', function(msg) {
     var pmid, div, div_html, i, j, k, S, styles, peaks,
       r = msg[1],
       bookmark_div = '<div id="css_loaded" class="thepaperlink" style="margin-left:10px;font-size:80%;font-weight:normal;cursor:pointer"> ';
-    if (r.error) {
+    if (r && r.error) {
       title_obj.html(old_title +
         ' <span style="font-size:14px;font-weight:normal;color:red">"the Paper Link" error ' +
         uneval(r.error) + '</span>');
+      return;
+    }
+    if (!r || !r.count) {
+      DEBUG && console.log('tj with nothing, oops - should never happen');
       return;
     }
     // @@@@ not allow by Mozilla
@@ -208,6 +214,12 @@ self.on('message', function(msg) {
       + '  color: grey;'
       + '  text-decoration: none;'
       + '  cursor: pointer'
+      + '}'
+      + 'img.pl4_clippy {'
+      + '  opacity: 0.4'
+      + '}'
+      + 'img.pl4_clippy:hover {'
+      + '  opacity: 1.0'
       + '}';
     if (!jQuery('#css_loaded').length) {
       S = doc.createElement('style');
@@ -231,9 +243,17 @@ self.on('message', function(msg) {
     }
     for (i = 0; i < r.count; i += 1) {
       pmid = r.item[i].pmid;
+      k = pmidArray.length;
+      for (j = 0; j < k; j += 1) {
+        if (pmid === pmidArray[j]) {
+          pmidArray = pmidArray.slice(0, j).concat(pmidArray.slice(j + 1, k));
+      } }
+      if (jQuery('#pl4me_' + pmid).length) {
+        continue;
+      }
       jQuery('#' + pmid).append( jQuery('<div>', {class: 'thepaperlink'}) );
       div = jQuery('#' + pmid + '> div.thepaperlink');
-      div.append( jQuery('<a>', {href: base_uri + '/?q=pmid:' + pmid,
+      div.append( jQuery('<a>', {href: base_uri + '/?q=pmid:' + pmid, id: 'pl4me_' + pmid,
         text: 'the Paper Link', class: 'thepaperlink-home', target: '_blank'}) );
       if (r.item[i].slfo && r.item[i].slfo !== '~' && parseFloat(r.item[i].slfo) > 0) {
         div.append( jQuery('<span>').text('impact ' + r.item[i].slfo) );
@@ -245,6 +265,10 @@ self.on('message', function(msg) {
       } else if (r.item[i].pii) {
         self.postMessage(['pii_link', pmid, r.item[i].pii]);
         div.append( jQuery('<span>', {text: '', id: 'thepaperlink_pdf' + pmid}) );
+        var s1 = jQuery('#citedBy' + pmid);
+        s1.append( jQuery('<span>', {text: '', id: 'pl4_scopus' + pmid}) );
+        s1.append( jQuery('<a>', {href: ezproxy_prefix + 'http://linkinghub.elsevier.com/retrieve/pii/' + r.item[i].pii,
+          text: '(in Scopus)', target: '_blank'}) );
       }
       if (r.item[i].pmcid) {
         div.append( jQuery('<a>', {href: 'https://www.ncbi.nlm.nih.gov/pmc/articles/' + r.item[i].pmcid + '/?tool=thepaperlinkClient',
@@ -314,11 +338,6 @@ self.on('message', function(msg) {
           }
         });
       }
-      k = pmidArray.length;
-      for (j = 0; j < k; j += 1) {
-        if (pmid === pmidArray[j]) {
-          pmidArray = pmidArray.slice(0, j).concat(pmidArray.slice(j + 1, k));
-      } }
     }
     if (pmidArray.length > 0) {
       if (pmidArray.length === k) {
@@ -368,7 +387,7 @@ self.on('message', function(msg) {
       } else if (msg[2] === 0 && msg[3] === 0) {
         jQuery('#citedBy' + msg[1]).fadeOut();
       } else if (msg[2] && msg[3]) {
-        jQuery('#citedBy' + msg[1]).text('Cited by ' + msg[2] + ' times (in Google Scholar)');
+        jQuery('#citedBy' + msg[1]).text('Cited by: ' + msg[2] + ' times (in Google Scholar)');
         jQuery('#citedBy' + msg[1]).click(function () {
           $(this).attr('target', '_blank');
           window.open('http://scholar.google.com' + msg[3]);
@@ -378,7 +397,7 @@ self.on('message', function(msg) {
     } catch (err) {
       DEBUG && console.log(err);
     }
-  } else if (msg[0] === 'el_link') {
+  } else if (msg[0] === 'el_data') {
     try {
       jQuery('#thepaperlink' + msg[1]).text('file link');
       jQuery('#thepaperlink' + msg[1]).click(function () {
