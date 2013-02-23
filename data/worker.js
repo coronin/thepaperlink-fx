@@ -1,9 +1,10 @@
 var ws,
   req_key,
   broadcast_loaded = 0,
-  DEBUG = true;
+  DEBUG = false;
 
 self.port.on('req_key', function(m) {
+  DEBUG && console.log(m);
   req_key = m[0];
   broadcast_loaded = 0;
   if (ws) {
@@ -13,6 +14,7 @@ self.port.on('req_key', function(m) {
 });
 
 self.on('message', function(m) {
+  DEBUG && console.log(m);
   ws.send(m);
 });
 

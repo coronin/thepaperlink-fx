@@ -192,6 +192,7 @@ self.on('message', function(msg) {
       peaks.setAttribute('src', base_uri + '/jss?y=' + (Math.random()));
       doc.body.appendChild(peaks);
     }
+    // @@@@
     styles = '.Off { display: none !important;}'
       + '.thepaperlink {'
       + '  background: #e0ecf1;'
