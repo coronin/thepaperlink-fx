@@ -82,14 +82,7 @@ function getPmid(zone, num) {
         jQuery( jQuery('<span>', {text: 'cited by: ', id: 'citedBy' + ID[1],
           style: 'border-left:6px #fccccc solid;padding-left:6px;font-size:11px'})
         ).appendTo( zone + ':eq(' + c + ')'
-        ).on('mouseover', function (event) {
-          jQuery(this).text('cited times is generated locally by fetching Google Scholar pages (Chrome only)');
-        })
-        .click(function () {
-          $(this).attr('target', '_blank');
-          window.open('https://chrome.google.com/webstore/detail/kgdcooicefdfjcplcnehfpbngjccncko');
-          return false;
-        });
+        );
       }
       pmids += ',' + ID[1];
       self.postMessage(['pmid_title', ID[1], t_title]);
@@ -127,7 +120,7 @@ function get_Json(pmids) {
 function run() {
   var i, z;
   try {
-    search_term = jQuery('#search_term').val();
+    search_term = jQuery('#term').val(); // 2013-3-26
   } catch (err) {
     DEBUG && console.log(err);
   }
@@ -164,7 +157,7 @@ self.on('message', function(msg) {
     loading_gif = msg[8];
     clippy_file = msg[9];
     remote_jss = msg[10];
-    var jquery_fn_ver = '1.4.2 1.4.3 1.4.4 1.5.0 1.5.1 1.5.2 1.6.0 1.6.1 1.6.2 1.6.3 1.6.4 1.7.0 1.7.1 1.7.2';
+    var jquery_fn_ver = '1.4.2 1.4.3 1.4.4 1.5.0 1.5.1 1.5.2 1.6.0 1.6.1 1.6.2 1.6.3 1.6.4 1.7.0 1.7.1 1.7.2 1.8.0 1.8.1 1.8.2 1.8.3';
     if (typeof jQuery !== 'undefined' && jquery_fn_ver.indexOf(jQuery.fn.jquery) >= 0) {
       run();
     } else {
@@ -324,15 +317,15 @@ self.on('message', function(msg) {
       if (jQuery('#thepaperlink_hidden' + pmid).length) {
         doc.getElementById('thepaperlink_hidden' + pmid).addEventListener('email_pdf', function () {
           var eventData = this.textContent,
-            pmid = this.id.substr(19),
-            pdf = doc.getElementById('thepaperlink_pdf' + pmid).href,
-            no_email_span = doc.getElementById('thepaperlink_save' + pmid).className;
+            evt_pmid = this.id.substr(19),
+            pdf = doc.getElementById('thepaperlink_pdf' + evt_pmid).href,
+            no_email_span = doc.getElementById('thepaperlink_save' + evt_pmid).className;
           if ( (' ' + no_email_span + ' ').indexOf(' no_email ') > -1 ) {
-            self.postMessage(['upload_pdf', eventData, pdf, pmid, apikey, 1]);
+            self.postMessage(['upload_pdf', eventData, pdf, evt_pmid, apikey, 1]);
           } else {
-            self.postMessage(['upload_pdf', eventData, pdf, pmid, apikey, 0]);
+            self.postMessage(['upload_pdf', eventData, pdf, evt_pmid, apikey, 0]);
             try {
-              doc.getElementById('thepaperlink_D' + pmid).setAttribute('style', 'display:none');
+              doc.getElementById('thepaperlink_D' + evt_pmid).setAttribute('style', 'display:none');
             } catch (err) {
               DEBUG && console.log(err);
             }
@@ -364,9 +357,8 @@ self.on('message', function(msg) {
     }
     title_obj.html(old_title +
       ' <span style="font-size:14px;font-weight:normal;color:red">Error! Try ' +
-      '<button onclick="window.location.reload()">reload</button> or ' +
-      '<b>Search</b> <a href="http://www.thepaperlink.com/?q=' + search_term +
-      '" target="_blank">the Paper Link</a>' +
+      'search on <a href="http://www.thepaperlink.com/?q=' + search_term +
+      '" target="_blank">our web site</a>.' +
       '<span style="float:right;cursor:pointer" id="thepaperlink_alert">&lt;!&gt;</span></span>');
     jQuery('#thepaperlink_alert').on('click', function () {
       if (apikey) {
@@ -389,6 +381,7 @@ self.on('message', function(msg) {
         jQuery('#citedBy' + msg[1]).fadeOut();
       } else if (msg[2] && msg[3]) {
         jQuery('#citedBy' + msg[1]).text('Cited by: ' + msg[2] + ' times (in Google Scholar)');
+        jQuery('#citedBy' + msg[1]).css('cursor', 'pointer');
         jQuery('#citedBy' + msg[1]).click(function () {
           $(this).attr('target', '_blank');
           window.open('http://scholar.google.com' + msg[3]);
@@ -400,12 +393,19 @@ self.on('message', function(msg) {
     }
   } else if (msg[0] === 'el_data') {
     try {
-      jQuery('#thepaperlink' + msg[1]).text('file link');
-      jQuery('#thepaperlink' + msg[1]).click(function () {
-        $(this).attr('target', '_blank');
-        window.open(msg[2]);
-        return false;
-      });
+      if (msg[2] === 1) {
+        jQuery('#thepaperlink' + msg[1]).text('trying');
+      } else if (msg[2] === '://') {
+        jQuery('#thepaperlink' + msg[1]).fadeOut();
+      } else {
+        jQuery('#thepaperlink' + msg[1]).text('file link');
+        jQuery('#thepaperlink' + msg[1]).css('cursor', 'pointer');
+        jQuery('#thepaperlink' + msg[1]).click(function () {
+          $(this).attr('target', '_blank');
+          window.open(msg[2]);
+          return false;
+        });
+      }
     } catch (err) {
       DEBUG && console.log(err);
     }

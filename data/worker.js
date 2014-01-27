@@ -21,11 +21,7 @@ self.on('message', function(m) {
 function load_broadcast(ws_addr) {
   var _self = this;
   this.start = function () {
-    window.WebSocket = window.WebSocket || window.MozWebSocket;
-    if (!window.WebSocket) {
-      return;
-    }
-    ws = new WebSocket('ws://' + ws_addr);
+    ws = new MozWebSocket('ws://' + ws_addr);
 
     ws.onopen = function () {
       DEBUG && console.log('>> ws is established');

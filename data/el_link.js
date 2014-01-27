@@ -10,12 +10,18 @@ self.on('message', function(msg) {
   DEBUG && console.log(msg);
   if (msg[0] === 'el_data') {
     try {
-      $(msg[1]).textContent = '&raquo; the file link';
-      $(msg[1]).onclick = function () {
-        //$(this).attr('target', '_blank');
-        window.open(msg[2]);
-        return false;
-      };
+      if (msg[2] === 1) {
+        $(msg[1]).textContent = 'trying';
+      } else if (msg[2] === '://') {
+        $(msg[1]).style.cssText = 'display:none !important';
+      } else {
+        $(msg[1]).textContent = 'file link';
+        $(msg[1]).onclick = function () {
+          //$(this).attr('target', '_blank');
+          window.open(msg[2]);
+          return false;
+        };
+      }
     } catch (err) {
       DEBUG && console.log(err);
     }

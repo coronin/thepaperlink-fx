@@ -5,11 +5,11 @@ exports.test_test_run = function(test) {
 };
 
 exports.test_id = function(test) {
-  test.assert(require('self').id.length > 0);
+  test.assert(require('sdk/self').id.length > 0);
 };
 
 exports.test_nonPubMed = function(test) {
-  require('request').Request({
+  require('sdk/request').Request({
     url: 'http://www.thepaperlink.com',
     onComplete: function(response) {
       test.assertEqual(response.statusText, 'OK');
@@ -20,7 +20,7 @@ exports.test_nonPubMed = function(test) {
 };
 
 exports.test_PubMed1 = function(test) {
-  require('request').Request({
+  require('sdk/request').Request({
     url: 'http://www.ncbi.nlm.nih.gov/pubmed?term=coronin',
     onComplete: function(response) {
       test.assertEqual(response.statusText, 'OK');
@@ -31,7 +31,7 @@ exports.test_PubMed1 = function(test) {
 };
 
 exports.test_PubMed2 = function(test) {
-  require('request').Request({
+  require('sdk/request').Request({
     url: 'http://www.ncbi.nlm.nih.gov/pubmed/18775315',
     onComplete: function(response) {
       test.assertEqual(response.statusText, 'OK');
