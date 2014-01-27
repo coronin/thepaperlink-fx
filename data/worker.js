@@ -13,7 +13,7 @@ self.port.on('req_key', function(m) {
   load_broadcast(m[1]);
 });
 
-self.on('message', function(m) {
+self.port.on('message', function(m) {
   DEBUG && console.log(m);
   ws.send(m);
 });
@@ -55,7 +55,7 @@ function load_broadcast(ws_addr) {
     };
 
     ws.onmessage = function (message) {
-      self.postMessage(message.data);
+      self.port.emit('message', message.data);
     };
   }
   _self.start();

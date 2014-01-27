@@ -5,7 +5,7 @@ var d = document;
 
 function $(a) { return d.getElementById(a); }
 
-self.on('message', function(msg) {
+self.port.on('init', function(msg) {
   var apikey = msg[0],
     pubmeder_ok = msg[1],
     cloud_op = msg[2],
@@ -83,10 +83,10 @@ self.on('message', function(msg) {
     '<li>More at Firefox Add-on <i>(Ctrl+Shift+A)</i> preference section</li></ul>');
 
   if ($('check_api')) {
-    $('check_api').onclick = function () { self.postMessage('check_apikey'); };
+    $('check_api').onclick = function () { self.port.emit('check_apikey'); };
   }
   if ($('activate_context_menu')) {
-    $('activate_context_menu').onclick = function () { self.postMessage('activate_context_menu'); };
+    $('activate_context_menu').onclick = function () { self.port.emit('activate_context_menu'); };
   }
 
 });

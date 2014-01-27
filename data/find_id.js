@@ -21,5 +21,5 @@ function parse_id(a) { // pubmeder code
 var page_body = document.body,
   ID = parse_id(page_body.textContent) || parse_id(page_body.innerHTML);
 if (ID !== null) {  
-  self.postMessage(['foundID', ID[1]]);
+  self.port.emit('foundID', ID[1]);
 }
