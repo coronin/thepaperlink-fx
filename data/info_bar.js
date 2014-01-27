@@ -265,7 +265,7 @@ self.port.on('to_bar', function(msg) {
           text: '(in Scopus)', target: '_blank'}) );
       }
       if (r.item[i].pmcid) {
-        div.append( jQuery('<a>', {href: 'https://www.ncbi.nlm.nih.gov/pmc/articles/' + r.item[i].pmcid + '/?tool=thepaperlinkClient',
+        div.append( jQuery('<a>', {href: 'https://www.ncbi.nlm.nih.gov/pmc/articles/' + r.item[i].pmcid + '/?tool=thepaperlink_fx',
           text: 'open access', target: '_blank',
           id: 'thepaperlink_pmc' + pmid}) );
       }
