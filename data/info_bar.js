@@ -35,7 +35,6 @@ function getPmid(zone, num) {
     regpmid = /PMID:\s(\d+)\s/,
     ID, b, c, t_cont, t_strings, t_test, t_title;
   DEBUG && console.log(a);
-    // swf_file = 'http://9.pl4.me/clippy.swf'; // need remote flash
   if (regpmid.test(a)) {
     ID = regpmid.exec(a);
     if (ID[1]) {
@@ -490,7 +489,7 @@ function saveIt_pubmeder(event) {
                     'pmid' : event.data.pmid},
         url = 'https://pubmeder-hrd.appspot.com';
       if (base_uri.indexOf('.appspot.') === -1) {
-        url = 'http://1.pl4.me';
+        url = 'http://1.zhaowenxian.com';
       }
       jQuery.get(url + '/input', args, function (data) {
         var d = jQuery.parseJSON(data); // JSON.parse()
