@@ -523,7 +523,9 @@ function saveIt(event) {
       var pmid = event.data.pmid,
         cloud_op = event.data.cloud_op;
       jQuery('#thepaperlink_save' + pmid).html('trying');
-      if (apikey && cloud_op && cloud_op.indexOf('d') >= 0) {
+      if (apikey && cloud_op && (
+          cloud_op.indexOf('d') >= 0 || cloud_op.indexOf('g') >= 0 || cloud_op.indexOf('s') >= 0
+        )) {
         event.data.no_pmid = 1;
         email_pdf(event);
       }

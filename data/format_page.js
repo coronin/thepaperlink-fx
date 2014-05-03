@@ -38,30 +38,48 @@ self.port.on('init', function(msg) {
 
   if (apikey) {
     div_html += '<li>save&nbsp;it: ';
+
     if (cloud_op.indexOf('m') > -1) {
       div_html += 'check your existing connection with ';
     } else {
       div_html += 'set up the connection with ';
     }
     div_html += '<a href="http://www.thepaperlink.com/oauth?v=mendeley" target="_blank">Mendeley</a></li><li>save&nbsp;it: ';
+
     if (cloud_op.indexOf('f') > -1) {
       div_html += 'check your existing connection with ';
     } else {
       div_html += 'set up the connection with ';
     }
     div_html += '<a href="http://www.thepaperlink.com/oauth?v=facebook" target="_blank">Facebook</a></li><li>save&nbsp;it: ';
+
     if (cloud_op.indexOf('d') > -1) {
       div_html += 'check your existing connection with ';
     } else {
       div_html += 'set up the connection with ';
     }
     div_html += '<a href="http://www.thepaperlink.com/oauth?v=dropbox" target="_blank">Dropbox</a></li><li>save&nbsp;it: ';
+
     if (cloud_op.indexOf('b') > -1) {
       div_html += 'check your existing connection with ';
     } else {
       div_html += 'set up the connection with ';
     }
-    div_html += '<a href="http://www.thepaperlink.com/oauth?v=douban" target="_blank">Douban</a></li>';
+    div_html += '<a href="http://www.thepaperlink.com/oauth?v=douban" target="_blank">Douban</a></li><li>save&nbsp;it: ';
+
+    if (cloud_op.indexOf('g') > -1) {
+      div_html += 'check your existing connection with ';
+    } else {
+      div_html += 'set up the connection with ';
+    }
+    div_html += '<a href="http://www.thepaperlink.com/oauth?v=googledrive" target="_blank">Google Drive</a></li><li>save&nbsp;it: ';
+
+    if (cloud_op.indexOf('s') > -1) {
+      div_html += 'check your existing connection with ';
+    } else {
+      div_html += 'set up the connection with ';
+    }
+    div_html += '<a href="http://www.thepaperlink.com/oauth?v=skydrive" target="_blank">Sky Drive</a></li>';
   }
 
   if (!tab_open_if_no_apikey) {
