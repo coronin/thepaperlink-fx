@@ -10,7 +10,7 @@ exports.test_id = function(test) {
 
 exports.test_nonPubMed = function(test) {
   require('sdk/request').Request({
-    url: 'http://www.thepaperlink.com',
+    url: 'http://cail.cn',
     onComplete: function(response) {
       test.assertEqual(response.statusText, 'OK');
       test.done();

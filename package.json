@@ -7,7 +7,7 @@
     "author": "Liang Cai",
     "homepage": "http://www.thepaperlink.com",
     "license": "MPL 1.1/GPL 2.0/LGPL 2.1",
-    "version": "1.2.6",
+    "version": "1.2.6.1",
     "preferences": [
       { "name": "tab_open_if_no_apikey",
         "title": "Obtain the access permission to personalized services",
