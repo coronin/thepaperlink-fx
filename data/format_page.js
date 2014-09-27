@@ -14,10 +14,15 @@ self.port.on('init', function(msg) {
     rev_proxy = msg[5],
     ezproxy_prefix = msg[6],
     div_html;
+
   div_html = '<p><img src="' + msg[7] +
       '" width="128" height="128" alt="add-on icon" /><br /><em>the Paper Link for PubMed</em><br />' +
-      'Start searching in <a href="http://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">http://www.ncbi.nlm.nih.gov/pubmed/' +
-      '</a> and enjoy the convenience <a href="http://www.thepaperlink.com" target="_blank">the Paper Link</a> brought to you...</p><ul><li>';
+      'Start searching in <a href="http://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">http://www.ncbi.nlm.nih.gov/pubmed/';
+  if (rev_proxy) {
+    div_html += '</a> and enjoy the convenience <a href="http://www.zhaowenxian.com" target="_blank">the Paper Link</a> brought to you...</p><ul><li>';
+  } else {
+    div_html += '</a> and enjoy the convenience <a href="http://www.thepaperlink.com" target="_blank">the Paper Link</a> brought to you...</p><ul><li>';
+  }
 
   if (apikey) {
     div_html += 'After search, you can click the icon "&hellip;" shown on the bar for extra function.' +

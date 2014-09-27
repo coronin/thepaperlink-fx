@@ -354,11 +354,19 @@ self.port.on('to_bar', function(msg) {
     if (!search_term) {
       search_term = localStorage.getItem('thePaperLink_ID');
     }
-    title_obj.html(old_title +
-      ' <span style="font-size:14px;font-weight:normal;color:red">Error! Try ' +
-      'search on <a href="http://www.thepaperlink.com/?q=' + search_term +
-      '" target="_blank">our web site</a>.' +
-      '<span style="float:right;cursor:pointer" id="thepaperlink_alert">&lt;!&gt;</span></span>');
+    if (ezproxy_prefix) {
+      title_obj.html(old_title +
+        ' <span style="font-size:14px;font-weight:normal;color:red">Error! Try ' +
+        'search on <a href="http://www.zhaowenxian.com/?q=' + search_term +
+        '" target="_blank">our web site</a>.' +
+        '<span style="float:right;cursor:pointer" id="thepaperlink_alert">&lt;!&gt;</span></span>');
+    } else {
+      title_obj.html(old_title +
+        ' <span style="font-size:14px;font-weight:normal;color:red">Error! Try ' +
+        'search on <a href="http://www.thepaperlink.com/?q=' + search_term +
+        '" target="_blank">our web site</a>.' +
+        '<span style="float:right;cursor:pointer" id="thepaperlink_alert">&lt;!&gt;</span></span>');
+    }
     jQuery('#thepaperlink_alert').on('click', function () {
       if (apikey) {
         jQuery.post(base_uri + '/',
