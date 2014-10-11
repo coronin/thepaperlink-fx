@@ -1,4 +1,4 @@
-the Paper Link for PubMed
+the paper link for PubMed
 --------
 In addition to existing PubMed search results, this extension will add direct PDF link; display F1000 scores, Impact Factor, Peaks and much more! It is built based on publicly available information from NLM / NCBI / NIH, and other sources. 
 

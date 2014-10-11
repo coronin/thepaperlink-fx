@@ -16,12 +16,12 @@ self.port.on('init', function(msg) {
     div_html;
 
   div_html = '<p><img src="' + msg[7] +
-      '" width="128" height="128" alt="add-on icon" /><br /><em>the Paper Link for PubMed</em><br />' +
+      '" width="128" height="128" alt="add-on icon" /><br /><em>the paper link for PubMed</em><br />' +
       'Start searching in <a href="http://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">http://www.ncbi.nlm.nih.gov/pubmed/';
   if (rev_proxy) {
-    div_html += '</a> and enjoy the convenience <a href="http://www.zhaowenxian.com" target="_blank">the Paper Link</a> brought to you...</p><ul><li>';
+    div_html += '</a> and enjoy the convenience <a href="http://www.zhaowenxian.com" target="_blank">the paper link</a> brought to you...</p><ul><li>';
   } else {
-    div_html += '</a> and enjoy the convenience <a href="http://www.thepaperlink.com" target="_blank">the Paper Link</a> brought to you...</p><ul><li>';
+    div_html += '</a> and enjoy the convenience <a href="http://www.thepaperlink.com" target="_blank">the paper link</a> brought to you...</p><ul><li>';
   }
 
   if (apikey) {
@@ -84,7 +84,14 @@ self.port.on('init', function(msg) {
     } else {
       div_html += 'set up the connection with ';
     }
-    div_html += '<a href="http://www.thepaperlink.com/oauth?v=skydrive" target="_blank">Sky Drive</a></li>';
+    div_html += '<a href="http://www.thepaperlink.com/oauth?v=skydrive" target="_blank">Sky Drive</a></li><li>save&nbsp;it: ';
+
+    if (cloud_op.indexOf('y') > -1) {
+      div_html += 'check your existing connection with ';
+    } else {
+      div_html += 'set up the connection with ';
+    }
+    div_html += '<a href="http://www.thepaperlink.com/oauth?v=baiduyun" target="_blank">Baidu Yun</a></li>';
   }
 
   if (!tab_open_if_no_apikey) {

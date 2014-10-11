@@ -26,6 +26,23 @@ if (typeof window.uneval === 'undefined') {
   };
 }
 
+function ez_format_link(p, url) {
+  if (!p) return url;
+  if (p.substr(0,1) === '.') {
+    var i, ss = '', s = url.split('/');
+    for (i = 0; i < s.length; i += 1) {
+      ss += s[i];
+      if (i === 2) {
+        ss += p;
+      }
+      ss += '/';
+    }
+    return ss;
+  } else {
+    return (p + url);
+  }
+}
+
 function t(n) { return doc.getElementsByTagName(n); }
 
 function trim(s) { return ( s || '' ).replace( /^\s+|\s+$/g, '' ); }
@@ -61,6 +78,7 @@ function getPmid(zone, num) {
           '. ' + trim( t_strings[1] ) +
           '. [PMID:' + ID[1] + ']\r\n';
       }
+      t_cont = t_cont.replace('See comment in PubMed Commons below', '');
       DEBUG && console.log(t_cont);
       if (t(zone)[num].className === 'rprt') {
         b = num + 3;
@@ -93,7 +111,7 @@ function get_Json(pmids) {
   var i,
     need_insert = 1,
     url = '/api?flash=yes&a=fx1&pmid=' + pmids,
-    loading_span = '<span style="font-weight:normal;font-style:italic"> fetching data from "the Paper Link"</span>&nbsp;&nbsp;<img src="' + loading_gif +
+    loading_span = '<span style="font-weight:normal;font-style:italic"> fetching data from "the paper link"</span>&nbsp;&nbsp;<img src="' + loading_gif +
       '" width="16" height="11" alt="loading" />';
   if (search_term) {
     url += '&w=' + search_term + '&apikey=';
@@ -169,7 +187,7 @@ self.port.on('to_bar', function(msg) {
       bookmark_div = '<div id="css_loaded" class="thepaperlink" style="margin-left:10px;font-size:80%;font-weight:normal;cursor:pointer"> ';
     if (r && r.error) {
       title_obj.html(old_title +
-        ' <span style="font-size:14px;font-weight:normal;color:red">"the Paper Link" error ' +
+        ' <span style="font-size:14px;font-weight:normal;color:red">"the paper link" error ' +
         uneval(r.error) + '</span>');
       return;
     }
@@ -247,12 +265,12 @@ self.port.on('to_bar', function(msg) {
       jQuery('#' + pmid).append( jQuery('<div>', {class: 'thepaperlink'}) );
       div = jQuery('#' + pmid + '> div.thepaperlink');
       div.append( jQuery('<a>', {href: base_uri + '/?q=pmid:' + pmid, id: 'pl4me_' + pmid,
-        text: 'the Paper Link', class: 'thepaperlink-home', target: '_blank'}) );
+        text: 'the paper link', class: 'thepaperlink-home', target: '_blank'}) );
       if (r.item[i].slfo && r.item[i].slfo !== '~' && parseFloat(r.item[i].slfo) > 0) {
         div.append( jQuery('<span>').text('impact ' + r.item[i].slfo) );
       }
       if (r.item[i].pdf) {
-        div.append( jQuery('<a>', {href: ezproxy_prefix + r.item[i].pdf,
+        div.append( jQuery('<a>', {href: ez_format_link(ezproxy_prefix, r.item[i].pdf),
           text: 'direct pdf', class: 'thepaperlink-green', target: '_blank',
           id: 'thepaperlink_pdf' + pmid}) );
       } else if (r.item[i].pii) {
@@ -260,7 +278,7 @@ self.port.on('to_bar', function(msg) {
         div.append( jQuery('<span>', {text: '', id: 'thepaperlink_pdf' + pmid}) );
         var s1 = jQuery('#citedBy' + pmid);
         s1.append( jQuery('<span>', {text: '', id: 'pl4_scopus' + pmid}) );
-        s1.append( jQuery('<a>', {href: ezproxy_prefix + 'http://linkinghub.elsevier.com/retrieve/pii/' + r.item[i].pii,
+        s1.append( jQuery('<a>', {href: ez_format_link(ezproxy_prefix, 'http://linkinghub.elsevier.com/retrieve/pii/' + r.item[i].pii),
           text: '(in Scopus)', target: '_blank'}) );
       }
       if (r.item[i].pmcid) {
@@ -269,16 +287,16 @@ self.port.on('to_bar', function(msg) {
           id: 'thepaperlink_pmc' + pmid}) );
       }
       if (r.item[i].doi) {
-        div.append( jQuery('<a>', {href: ezproxy_prefix + 'http://dx.doi.org/' + r.item[i].doi,
+        div.append( jQuery('<a>', {href: ez_format_link(ezproxy_prefix, 'http://dx.doi.org/' + r.item[i].doi),
           text: 'publisher', target: '_blank',
           id: 'thepaperlink_doi' + pmid}) );
       } else if (r.item[i].pii) {
-        div.append( jQuery('<a>', {href: ezproxy_prefix + 'http://linkinghub.elsevier.com/retrieve/pii/' + r.item[i].pii,
+        div.append( jQuery('<a>', {href: ez_format_link(ezproxy_prefix, 'http://linkinghub.elsevier.com/retrieve/pii/' + r.item[i].pii),
           text: 'publisher', target: '_blank',
           id: 'thepaperlink_doi' + pmid}) );
       }
       if (r.item[i].f_v && r.item[i].fid) {
-        div.append( jQuery('<a>', {href: ezproxy_prefix + 'http://f1000.com/' + r.item[i].fid,
+        div.append( jQuery('<a>', {href: ez_format_link(ezproxy_prefix, 'http://f1000.com/' + r.item[i].fid),
           text: 'f1000 score ' + r.item[i].f_v, class: 'thepaperlink-red', target: '_blank',
           id: 'thepaperlink_f' + pmid}) );
       }
@@ -354,19 +372,11 @@ self.port.on('to_bar', function(msg) {
     if (!search_term) {
       search_term = localStorage.getItem('thePaperLink_ID');
     }
-    if (ezproxy_prefix) {
-      title_obj.html(old_title +
-        ' <span style="font-size:14px;font-weight:normal;color:red">Error! Try ' +
-        'search on <a href="http://www.zhaowenxian.com/?q=' + search_term +
-        '" target="_blank">our web site</a>.' +
-        '<span style="float:right;cursor:pointer" id="thepaperlink_alert">&lt;!&gt;</span></span>');
-    } else {
-      title_obj.html(old_title +
-        ' <span style="font-size:14px;font-weight:normal;color:red">Error! Try ' +
-        'search on <a href="http://www.thepaperlink.com/?q=' + search_term +
-        '" target="_blank">our web site</a>.' +
-        '<span style="float:right;cursor:pointer" id="thepaperlink_alert">&lt;!&gt;</span></span>');
-    }
+    title_obj.html(old_title +
+      ' <span style="font-size:14px;font-weight:normal;color:red">Error! Try ' +
+      'search on <a href="' + base_uri + '/?q=' + search_term +
+      '" target="_blank">our web site</a>.' +
+      '<span style="float:right;cursor:pointer" id="thepaperlink_alert">&lt;!&gt;</span></span>');
     jQuery('#thepaperlink_alert').on('click', function () {
       if (apikey) {
         jQuery.post(base_uri + '/',
@@ -532,7 +542,7 @@ function saveIt(event) {
         cloud_op = event.data.cloud_op;
       jQuery('#thepaperlink_save' + pmid).html('trying');
       if (apikey && cloud_op && (
-          cloud_op.indexOf('d') >= 0 || cloud_op.indexOf('g') >= 0 || cloud_op.indexOf('s') >= 0
+          cloud_op.indexOf('d') >= 0 || cloud_op.indexOf('g') >= 0 || cloud_op.indexOf('s') >= 0 || cloud_op.indexOf('y') >= 0
         )) {
         event.data.no_pmid = 1;
         email_pdf(event);
