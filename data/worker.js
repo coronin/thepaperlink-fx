@@ -4,7 +4,7 @@ var ws,
   DEBUG = false;
 
 self.port.on('req_key', function(m) {
-  DEBUG && console.log(m);
+  DEBUG && console.log('worker 7: ' + m);
   req_key = m[0];
   broadcast_loaded = 0;
   if (ws) {
@@ -14,7 +14,7 @@ self.port.on('req_key', function(m) {
 });
 
 self.port.on('message', function(m) {
-  DEBUG && console.log(m);
+  DEBUG && console.log('worker 17: ' + m);
   ws.send(m);
 });
 

@@ -51,7 +51,7 @@ function getPmid(zone, num) {
   var a = t(zone)[num].textContent,
     regpmid = /PMID:\s(\d+)\s/,
     ID, b, c, t_cont, t_strings, t_test, t_title;
-  DEBUG && console.log(a);
+  DEBUG && console.log('info_bar 54: ' + a);
   if (regpmid.test(a)) {
     ID = regpmid.exec(a);
     if (ID[1]) {
@@ -79,7 +79,7 @@ function getPmid(zone, num) {
           '. [PMID:' + ID[1] + ']\r\n';
       }
       t_cont = t_cont.replace('See comment in PubMed Commons below', '');
-      DEBUG && console.log(t_cont);
+      DEBUG && console.log('info_bar 82:' + t_cont);
       if (t(zone)[num].className === 'rprt') {
         b = num + 3;
         c = num + 3;  // 4
@@ -88,7 +88,7 @@ function getPmid(zone, num) {
         c = num + 4;  // 5
       }
       jQuery( jQuery('<div>', {text: ' ', style: 'float:right;z-index:1;cursor:pointer'})
-        .html('<img class="pl4_clippy" title="copy to clipboard" src="' + clippy_file + '" alt="copy" width="14" height="14" />')
+        .html('<img class="_clippy" title="copy to clipboard" src="' + clippy_file + '" alt="copy" width="14" height="14" />')
       ).appendTo( zone + ':eq(' + b + ')'
       ).on('click', {t_cont:t_cont}, function (event) {
         var t_cont = event.data.t_cont;
@@ -139,7 +139,7 @@ function run() {
   try {
     search_term = jQuery('#term').val(); // 2013-3-26
   } catch (err) {
-    DEBUG && console.log(err);
+    DEBUG && console.log('info_bar 142: ' + err);
   }
   self.port.emit('bar_msg', ['reset_scholar_count']);
   for (i = 0; i < t('div').length; i += 1) {
@@ -162,7 +162,7 @@ function run() {
 
 
 self.port.on('to_bar', function(msg) {
-  DEBUG && console.log(msg);
+  DEBUG && console.log('info_bar 165: ' + msg);
   if (msg[0] === 'init') {
     base_uri = msg[1];
     apikey = msg[2];
@@ -178,7 +178,7 @@ self.port.on('to_bar', function(msg) {
     if (typeof jQuery !== 'undefined' && jquery_fn_ver.indexOf(jQuery.fn.jquery) >= 0) {
       run();
     } else {
-      DEBUG && console.log('too bad - no jQuery no go');
+      DEBUG && console.log('info_bar 181: too bad - no jQuery no go');
     }
 
   } else if (msg[0] === 'tj') {
@@ -192,7 +192,7 @@ self.port.on('to_bar', function(msg) {
       return;
     }
     if (!r || !r.count) {
-      DEBUG && console.log('tj with nothing, oops - should never happen');
+      DEBUG && console.log('info_bar 195: tj with nothing, oops - should never happen');
       return;
     }
     // @@@@ not allow by Mozilla
@@ -226,10 +226,10 @@ self.port.on('to_bar', function(msg) {
       + '  text-decoration: none;'
       + '  cursor: pointer'
       + '}'
-      + 'img.pl4_clippy {'
+      + 'img._clippy {'
       + '  opacity: 0.4'
       + '}'
-      + 'img.pl4_clippy:hover {'
+      + 'img._clippy:hover {'
       + '  opacity: 1.0'
       + '}';
     if (!jQuery('#css_loaded').length) {
@@ -344,7 +344,7 @@ self.port.on('to_bar', function(msg) {
             try {
               doc.getElementById('thepaperlink_D' + evt_pmid).setAttribute('style', 'display:none');
             } catch (err) {
-              DEBUG && console.log(err);
+              DEBUG && console.log('info_bar 347: ' + err);
             }
           }
         });
@@ -352,16 +352,16 @@ self.port.on('to_bar', function(msg) {
     }
     if (pmidArray.length > 0) {
       if (pmidArray.length === k) {
-        DEBUG && console.log('getting nothing, failed on ' + k);
+        DEBUG && console.log('info_bar 355: getting nothing, failed on ' + k);
       } else {
-        DEBUG && console.log('call for ' + k + ', not get ' + pmidArray.length);
+        DEBUG && console.log('info_bar 357: call for ' + k + ', not get ' + pmidArray.length);
         title_obj.html(old_title + bookmark_div + '&nbsp;&nbsp;<img src="' + loading_gif +
           '" width="16" height="11" alt="loading" />');
         onePage_calls += 1;
         self.port.emit('bar_msg', ['url', '/api?a=fx2&pmid=' + pmidArray.join(',') + '&apikey=']);
       }
     }
-    DEBUG && console.log('onePage_calls: ' + onePage_calls);
+    DEBUG && console.log('info_bar 364, onePage_calls: ' + onePage_calls);
 
   } else if (msg[0] === 'wrong') {
     alert(msg[1]);
@@ -406,7 +406,7 @@ self.port.on('to_bar', function(msg) {
         });
       }
     } catch (err) {
-      DEBUG && console.log(err);
+      DEBUG && console.log('info_bar 409: ' + err);
     }
   } else if (msg[0] === 'el_data') {
     try {
@@ -424,7 +424,7 @@ self.port.on('to_bar', function(msg) {
         });
       }
     } catch (err) {
-      DEBUG && console.log(err);
+      DEBUG && console.log('info_bar 427: ' + err);
     }
   }
 });

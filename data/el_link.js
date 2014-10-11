@@ -7,7 +7,7 @@ var DEBUG = false,
 function $(d) { return page_d.getElementById(d); }
 
 self.port.on('message', function(msg) {
-  DEBUG && console.log(msg);
+  DEBUG && console.log('el_link 10: ' + msg);
   if (msg[0] === 'el_data') {
     try {
       $(msg[1]).textContent = '&raquo; the file link';
@@ -17,7 +17,7 @@ self.port.on('message', function(msg) {
         return false;
       };
     } catch (err) {
-      DEBUG && console.log(err);
+      DEBUG && console.log('el_link 20: ' + err);
     }
   } else if (msg[0] === 'g_scholar') {
     try {
@@ -33,7 +33,7 @@ self.port.on('message', function(msg) {
         };
       }
     } catch (err) {
-      DEBUG && console.log(err);
+      DEBUG && console.log('el_link 36: ' + err);
     }
   }
 });
